@@ -858,6 +858,48 @@ impl VcpuFd {
         Ok(xsave)
     }
 
+    /// blablabla bla
+    pub const MAX_XSAVE2_ENTRIES: usize = 2048;
+
+    /// X86 specific call that returns the vcpu's current "xsave struct".
+    ///
+    /// See the documentation for `KVM_GET_XSAVE2` in the
+    /// [KVM API doc](https://www.kernel.org/doc/Documentation/virtual/kvm/api.txt).
+    ///
+    /// # Arguments
+    ///
+    /// * `kvm_xsave` - xsave struct to be read.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # extern crate kvm_ioctls;
+    /// # use kvm_ioctls::Kvm;
+    /// let kvm = Kvm::new().unwrap();
+    /// let vm = kvm.create_vm().unwrap();
+    /// let vcpu = vm.create_vcpu(0).unwrap();
+    /// let xsave = vcpu.get_xsave2().unwrap();
+    /// ```
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    pub fn get_xsave2(&self) -> Result<XSave> {
+        // let mut cpuid = CpuId::new(num_entries).map_err(|_| errno::Error::new(libc::ENOMEM))?;
+        // let ret =
+        //     // SAFETY: Here we trust the kernel not to read past the end of the kvm_cpuid2 struct.
+        //     unsafe { ioctl_with_mut_ptr(self, KVM_GET_CPUID2(), cpuid.as_mut_fam_struct_ptr()) };
+        // if ret != 0 {
+        //     return Err(errno::Error::last());
+        // }
+        // Ok(cpuid)
+
+        let mut xsave = XSave::new(MAX_XSAVE2_ENTRIES).map_err(|_| errno::Error::new(libc::ENOMEM))?;
+        // SAFETY: Here we trust the kernel not to read past the end of the kvm_xsave struct.
+        let ret = unsafe { ioctl_with_mut_ptr(self, KVM_GET_XSAVE2(), xsave.as_mut_fam_struct_ptr()) };
+        if ret != 0 {
+            return Err(errno::Error::last());
+        }
+        Ok(xsave)
+    }
+
     /// X86 specific call that sets the vcpu's current "xsave struct".
     ///
     /// See the documentation for `KVM_SET_XSAVE` in the

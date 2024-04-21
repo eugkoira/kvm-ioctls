@@ -279,6 +279,10 @@ ioctl_iow_nr!(KVM_GET_DEVICE_ATTR, KVMIO, 0xe2, kvm_device_attr);
 /* Available with KVM_CAP_DEVICE_CTRL */
 ioctl_iow_nr!(KVM_HAS_DEVICE_ATTR, KVMIO, 0xe3, kvm_device_attr);
 
+/* Available with KVM_CAP_XSAVE2 */
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+ioctl_ior_nr!(KVM_GET_XSAVE2, KVMIO, 0xcf, kvm_xsave);
+
 #[cfg(test)]
 mod tests {
     #![allow(clippy::undocumented_unsafe_blocks)]

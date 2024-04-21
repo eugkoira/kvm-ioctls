@@ -1296,7 +1296,7 @@ impl VmFd {
     /// Wrapper over `KVM_CHECK_EXTENSION`.
     ///
     /// Returns 0 if the capability is not available and a positive integer otherwise.
-    fn check_extension_int(&self, c: Cap) -> i32 {
+    pub fn check_extension_int(&self, c: Cap) -> i32 {
         // SAFETY: Safe because we know that our file is a VM fd and that the extension is one of
         // the ones defined by kernel.
         unsafe { ioctl_with_val(self, KVM_CHECK_EXTENSION(), c as c_ulong) }
